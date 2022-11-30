@@ -9,5 +9,6 @@ object ScoreboardError {
 
   case object NegativeScoreError extends ScoreboardError
   case object TeamNameEmpty extends ScoreboardError
-  case class TeamNotFound(teamName: String) extends ScoreboardError
+  case class MatchAlreadyExists(homeTeamName: String, awayTeamName: String)
+  case class MatchNotFound(teamName: String) extends ScoreboardError
 }

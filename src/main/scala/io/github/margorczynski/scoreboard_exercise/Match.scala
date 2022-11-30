@@ -8,4 +8,5 @@ package io.github.margorczynski.scoreboard_exercise
  * @param homeTeamScore The score obtained by the home team
  * @param awayTeamScore The score obtained by the away team
  */
+//TODO: Add timestamp to track game start
 case class Match(homeTeam: String, awayTeam: String, homeTeamScore: Int, awayTeamScore: Int)
