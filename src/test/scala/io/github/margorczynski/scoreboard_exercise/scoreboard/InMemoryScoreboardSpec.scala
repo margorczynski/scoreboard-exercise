@@ -3,7 +3,7 @@ package io.github.margorczynski.scoreboard_exercise.scoreboard
 import org.scalatest._
 import flatspec._
 import io.github.margorczynski.scoreboard_exercise.Match
-import io.github.margorczynski.scoreboard_exercise.scoreboard.ScoreboardError.{MatchAlreadyExists, MatchNotFound, NegativeScoreError, TeamNameEmpty}
+import io.github.margorczynski.scoreboard_exercise.scoreboard.ScoreboardError.{MatchAlreadyExists, MatchNotFound, NegativeScoreError, TeamNameBlank}
 import matchers._
 
 class InMemoryScoreboardSpec extends AnyFlatSpec with should.Matchers {
@@ -18,8 +18,8 @@ class InMemoryScoreboardSpec extends AnyFlatSpec with should.Matchers {
     val homeTeamEmptyResult = testScoreboard.startNewGame("", awayTeamName)
     val awayTeamEmptyResult = testScoreboard.startNewGame(homeTeamName, "")
 
-    homeTeamEmptyResult shouldBe Left(TeamNameEmpty)
-    awayTeamEmptyResult shouldBe Left(TeamNameEmpty)
+    homeTeamEmptyResult shouldBe Left(TeamNameBlank)
+    awayTeamEmptyResult shouldBe Left(TeamNameBlank)
   }
 
   "startNewGame" should "return a MatchAlreadyExists error if the given match already exists" in {
@@ -29,7 +29,7 @@ class InMemoryScoreboardSpec extends AnyFlatSpec with should.Matchers {
 
     val secondCreateResult = testScoreboard.startNewGame(homeTeamName, awayTeamName)
 
-    secondCreateResult shouldBe Left(MatchAlreadyExists)
+    secondCreateResult shouldBe Left(MatchAlreadyExists(homeTeamName, awayTeamName))
   }
 
   "startNewGame" should "succeed if the team names are not empty and the match doesn't already exist" in {
@@ -47,8 +47,8 @@ class InMemoryScoreboardSpec extends AnyFlatSpec with should.Matchers {
     val homeTeamEmptyResult = testScoreboard.updateScore("", awayTeamName, 1 ,1)
     val awayTeamEmptyResult = testScoreboard.updateScore(homeTeamName, "", 1, 1)
 
-    homeTeamEmptyResult shouldBe Left(TeamNameEmpty)
-    awayTeamEmptyResult shouldBe Left(TeamNameEmpty)
+    homeTeamEmptyResult shouldBe Left(TeamNameBlank)
+    awayTeamEmptyResult shouldBe Left(TeamNameBlank)
   }
 
   "updateScore" should "return a NegativeScoreError error if a team score is negative" in {
@@ -71,7 +71,7 @@ class InMemoryScoreboardSpec extends AnyFlatSpec with should.Matchers {
 
     val matchNotFoundResult = testScoreboard.updateScore(nonExistentTeamName, awayTeamName, 1 ,1)
 
-    matchNotFoundResult shouldBe Left(MatchNotFound)
+    matchNotFoundResult shouldBe Left(MatchNotFound(nonExistentTeamName, awayTeamName))
   }
 
   "updateScore" should "succeed if the match exists and the new scores are positive" in {
@@ -93,7 +93,7 @@ class InMemoryScoreboardSpec extends AnyFlatSpec with should.Matchers {
 
     val matchNotFoundResult = testScoreboard.finishGame(nonExistentTeamName, awayTeamName)
 
-    matchNotFoundResult shouldBe Left(MatchNotFound)
+    matchNotFoundResult shouldBe Left(MatchNotFound(nonExistentTeamName, awayTeamName))
   }
 
   "finishGame" should "succeed if the given match exists" in {
@@ -124,8 +124,9 @@ class InMemoryScoreboardSpec extends AnyFlatSpec with should.Matchers {
       Match("Argentina", "Australia", 3, 1)
     )
 
-    testMatches.foreach { case Match(homeTeam, awayTeam, _, _) =>
+    testMatches.foreach { case Match(homeTeam, awayTeam, homeTeamScore, awayTeamScore) =>
       testScoreboard.startNewGame(homeTeam, awayTeam)
+      testScoreboard.updateScore(homeTeam, awayTeam, homeTeamScore, awayTeamScore)
     }
 
     testScoreboard.getGamesSummary shouldBe Right(

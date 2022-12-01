@@ -14,11 +14,12 @@ https://www.scala-sbt.org/download.html
 From the project directory please execute the command `sbt test`
 
 ### Assumptions
+- We assume no use of null values for names
 - There is a finite amount of matches
 - A team name is of finite length
+- A team name is a non-blank string
 - Scores which are less than Int.Min won't be passed as arguments 
 - A match score cannot be bigger than Int.Max
 - Creating a match with already existing home-away team names causes an error, 
  not an overwrite
-- We will use the local date time of the system on which the project and tests
-are executed
+- We assume that the underlying Scoreboard implementation encodes order of insertion
