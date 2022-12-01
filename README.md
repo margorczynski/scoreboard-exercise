@@ -13,6 +13,8 @@ https://www.scala-sbt.org/download.html
 #### Running the tests
 From the project directory please execute the command `sbt test`
 
+In general the project code can be compiled using `sbt compile`
+
 ### Assumptions
 - We assume no use of null values for names
 - There is a finite amount of matches
